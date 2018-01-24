@@ -4,6 +4,7 @@ version: '2.2'
 
 networks:
   ui-for-docker_local:
+  spiderfoot_local:
 
 services:
 
@@ -91,4 +92,23 @@ services:
     image: "dtagdevsec/ui-for-docker:1710"
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
+
+# Netdata service
+  netdata:
+    container_name: netdata
+    restart: always
+    network_mode: "host"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    cap_add:
+     - SYS_PTRACE
+    security_opt:
+     - apparmor=unconfined
+    image: "dtagdevsec/netdata:1710"
+    volumes:
+     - /proc:/host/proc:ro
+     - /sys:/host/sys:ro
+     - /var/run/docker.sock:/var/run/docker.sock
+
 
